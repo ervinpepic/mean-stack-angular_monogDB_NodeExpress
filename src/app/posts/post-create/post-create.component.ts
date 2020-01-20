@@ -6,8 +6,10 @@ import { Component } from '@angular/core';
 
 })
 export class PostCreateComponent {
-
+  newPost = 'unesite tekst';
+  entryData = '';
   onAddPost() {
+    this.newPost = this.entryData;
     console.log('Post Added');
   }
 
