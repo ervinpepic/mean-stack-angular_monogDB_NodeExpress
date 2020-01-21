@@ -1,32 +1,45 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, OnDestroy } from '@angular/core';
+
 import { Post } from '../post.model';
+import { PostsService } from '../posts.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-post-list',
   templateUrl: './post-list.component.html',
   styleUrls: ['./post-list.component.css']
 })
-export class PostListComponent implements OnInit {
+export class PostListComponent implements OnInit, OnDestroy {
 
-  constructor() { }
-
- @Input() posts: Post[] = [];
-//   posts = [
-//   {
-//     title: 'Naslov 1',
-//     content: 'Sadrzaj 1'
-//   },
-//   {
-//     title: 'Naslov 2',
-//     content: 'Sadrzaj 2',
-//   },
-//   {
-//     title: 'Naslov 3',
-//     content: 'Sadrzaj 3'
-//   }
-// ];
+  constructor(public postService: PostsService) { }
+  posts: Post[] = [];
+  private postSbuscription: Subscription;
 
   ngOnInit() {
+    this.posts = this.postService.getPosts();
+    this.postSbuscription = this.postService.getPostsUpdatedListener().subscribe((prikupljeniPostovi: Post[]) => {
+      this.posts = prikupljeniPostovi;
+    });
   }
+
+  ngOnDestroy() {
+    this.postSbuscription.unsubscribe();
+  }
+
+  //   posts = [
+  //   {
+  //     title: 'Naslov 1',
+  //     content: 'Sadrzaj 1'
+  //   },
+  //   {
+  //     title: 'Naslov 2',
+  //     content: 'Sadrzaj 2',
+  //   },
+  //   {
+  //     title: 'Naslov 3',
+  //     content: 'Sadrzaj 3'
+  //   }
+  // ];
+
 
 }
