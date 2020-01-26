@@ -1,11 +1,11 @@
-const app = require('./backend/app');
-const debug = require('debug')('node-angular');
-const http = require('http');
+const app = require("./backend/app");
+const debug = require("debug")("node-angular");
+const http = require("http");
 
 const normalizePort = val => {
   var port = parseInt(val, 10);
 
-  if (isNaN(port)){
+  if (isNaN(port)) {
     //imenovana vrijednost
     return val;
   }
@@ -17,11 +17,11 @@ const normalizePort = val => {
 };
 
 const onError = error => {
-  if (error.syscall !== 'listen') {
+  if (error.syscall !== "listen") {
     throw error;
   }
   const bind = typeof port === "string" ? "pipe" + port : "port" + port;
-  switch(error.code) {
+  switch (error.code) {
     case "EACCES":
       console.error(bind + "requires elevated privileges");
       process.exit(1);
@@ -39,7 +39,7 @@ const onListening = () => {
   const addr = server.address();
   const bind = typeof port === "string" ? "pipe" + port : "port" + port;
   debug("listening on" + bind);
-}
+};
 
 const port = normalizePort(process.env.PORT || "3000");
 app.set("port", port);
