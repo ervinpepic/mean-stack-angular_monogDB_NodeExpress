@@ -38,9 +38,11 @@ app.post("/api/posts", (requ, resp, next) => {
     title: requ.body.title,
     content: requ.body.content
   });
-  post.save();
-  resp.status(201).json({
-    message: "Post added successfully"
+  post.save().then(createdPost => {
+    resp.status(201).json({
+      message: "Post added successfully",
+      postId: createdPost._id
+    });
   });
 });
 
@@ -51,6 +53,14 @@ app.get("/api/posts", (requ, resp, next) => {
       posts: fajlovi
     });
   });
+});
+
+app.delete("/api/posts/:id", (requ, resp, next) => {
+  Post.deleteOne({ _id: requ.params.id }).then(rezultat => {
+    console.log(rezultat);
+    resp.status(200).json({ message: 'Post deleted successfully' });
+  });
+
 });
 
 module.exports = app;

@@ -18,20 +18,20 @@ export class PostsService {
   constructor(private httpKlijent: HttpClient) { }
 
   getPosts() {
-    this.httpKlijent.get<{ message: string, posts: any}>('http://localhost:3000/api/posts')
-    .pipe(map((postPodaci) => {
-      return postPodaci.posts.map(singlePost => {
-        return {
-          title: singlePost.title,
-          content: singlePost.content,
-          id: singlePost._id
-        };
+    this.httpKlijent.get<{ message: string, posts: any }>('http://localhost:3000/api/posts')
+      .pipe(map((postPodaci) => {
+        return postPodaci.posts.map(singlePost => {
+          return {
+            title: singlePost.title,
+            content: singlePost.content,
+            id: singlePost._id
+          };
+        });
+      }))
+      .subscribe(transformedPosts => {
+        this.posts = transformedPosts;
+        this.postsUpdated.next([...this.posts]);
       });
-    }))
-    .subscribe(transformedPosts => {
-      this.posts = transformedPosts;
-      this.postsUpdated.next([...this.posts]);
-    });
   }
   getPostsUpdatedListener() {
     return this.postsUpdated.asObservable();
@@ -39,12 +39,22 @@ export class PostsService {
 
   addPost(title: string, content: string) {
     const post: Post = { id: null, title: title, content: content };
-    this.httpKlijent.post<{ message: string }>('http://localhost:3000/api/posts', post).subscribe((risponsPodaci) => {
-      console.log(risponsPodaci.message);
-      this.posts.push(post);
-      this.postsUpdated.next([...this.posts]);
-    });
+    this.httpKlijent.post<{ message: string, postId: string }>('http://localhost:3000/api/posts', post)
+      .subscribe((risponsPodaci) => {
+        const id = risponsPodaci.postId;
+        post.id = id;
+        this.posts.push(post);
+        this.postsUpdated.next([...this.posts]);
+      });
 
+  }
+  deletePost(postId: string) {
+    this.httpKlijent.delete('http://localhost:3000/api/posts/' + postId)
+      .subscribe(() => {
+        const updatedPost = this.posts.filter(filterPost => filterPost.id !== postId);
+        this.posts = updatedPost;
+        this.postsUpdated.next([...this.posts]);
+      });
   }
 
 }
