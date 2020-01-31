@@ -33,9 +33,13 @@ export class PostsService {
         this.postsUpdated.next([...this.posts]);
       });
   }
+  getPost(id: string) {
+    return this.httpKlijent.get<{ _id: string, title: string, content: string }>('http://localhost:3000/api/posts/' + id);
+  }
   getPostsUpdatedListener() {
     return this.postsUpdated.asObservable();
   }
+
 
   addPost(title: string, content: string) {
     const post: Post = { id: null, title: title, content: content };
@@ -48,6 +52,18 @@ export class PostsService {
       });
 
   }
+  updatePost(paramId: string, paramTitle: string, paramContent: string) {
+    const postToUpdate: Post = { id: paramId, title: paramTitle, content: paramContent }
+    this.httpKlijent.put('http://localhost:3000/api/posts/' + paramId, postToUpdate)
+      .subscribe(rispons => {
+        const aptejtovaniPost = [...this.posts];
+        const oldPostIndex = aptejtovaniPost.findIndex(pst => pst.id === postToUpdate.id);
+        aptejtovaniPost[oldPostIndex] = postToUpdate;
+        this.posts = aptejtovaniPost;
+        this.postsUpdated.next([...this.posts]);
+      });
+  }
+
   deletePost(postId: string) {
     this.httpKlijent.delete('http://localhost:3000/api/posts/' + postId)
       .subscribe(() => {

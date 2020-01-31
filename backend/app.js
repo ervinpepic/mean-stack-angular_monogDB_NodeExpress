@@ -28,7 +28,7 @@ app.use((requ, resp, next) => {
   );
   resp.setHeader(
     "Access-Control-Allow-Methods",
-    "GET, POST, PATCH, DELETE, OPTIONS"
+    "GET, POST, PATCH, PUT, DELETE, OPTIONS"
   );
   next();
 });
@@ -53,6 +53,28 @@ app.get("/api/posts", (requ, resp, next) => {
       posts: fajlovi
     });
   });
+});
+
+app.put("/api/posts/:id", (requ, resp, next) => {
+  const post = new Post({
+    _id: requ.body.id,
+    title: requ.body.title,
+    content: requ.body.content
+  });
+  Post.updateOne({ _id: requ.params.id }, post).then(rezultat => {
+    console.log(rezultat);
+    resp.status(200).json({message: 'Updated successfully'});
+  });
+});
+
+app.get("/api/posts/:id", (requ, resp, next) => {
+  Post.findById(requ.params.id).then(post => {
+    if (post) {
+      resp.status(200).json(post);
+    } else {
+      resp.status(404).json({message: 'Post not found'});
+    }
+  })
 });
 
 app.delete("/api/posts/:id", (requ, resp, next) => {
