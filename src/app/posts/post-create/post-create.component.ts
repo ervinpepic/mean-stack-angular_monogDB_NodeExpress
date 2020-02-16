@@ -21,6 +21,7 @@ export class PostCreateComponent implements OnInit {
   enteredTitle = '';
   enteredContent = '';
   singlePost: Post;
+  isLoading = false;
   private formMode = 'create';
   private postId: string;
 
@@ -29,7 +30,9 @@ export class PostCreateComponent implements OnInit {
       if (parametriMape.has('postId')) {
         this.formMode = 'edit';
         this.postId = parametriMape.get('postId');
+        this.isLoading = true;
         this.postServcie.getPost(this.postId).subscribe(postPodaci => {
+          this.isLoading = false;
           this.singlePost = {id: postPodaci._id, title: postPodaci.title, content: postPodaci.content };
         });
       } else {
